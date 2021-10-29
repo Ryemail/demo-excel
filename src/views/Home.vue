@@ -35,9 +35,19 @@
 import XlsxPopulate from "xlsx-populate";
 import { saveAs } from "file-saver";
 import { reactive } from "@vue/reactivity";
-import { transformRange, colspan, rowspan } from "@/utils";
+import { colspan, rowspan } from "@/utils";
 
 import "./style.less";
+import { columnNumberToName } from "../utils";
+
+console.log(columnNumberToName(100));
+
+const mereges = [
+	{ s: { c: 1, r: 1 }, e: { c: 3, r: 1 } },
+	{ s: { c: 3, r: 2 }, e: { c: 3, r: 4 } },
+];
+
+console.log(mereges);
 
 export default {
 	name: "Home",
@@ -50,9 +60,8 @@ export default {
 		]);
 
 		const merges = reactive([
-			// transformRange("A1:B2"),
-			transformRange("A1:C1"),
-			transformRange("C2:C4"),
+			{ s: { c: 1, r: 1 }, e: { c: 3, r: 1 } },
+			{ s: { c: 3, r: 2 }, e: { c: 3, r: 4 } },
 		]);
 
 		const onFileChange = (file) => {

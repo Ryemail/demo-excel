@@ -11,6 +11,20 @@ export function columnNameToNumber(name) {
 	return sum;
 }
 
+export function columnNumberToName(number) {
+	let dividend = number;
+	let name = "";
+	let modulo = 0;
+
+	while (dividend > 0) {
+		modulo = (dividend - 1) % 26;
+		name = String.fromCharCode("A".charCodeAt(0) + modulo) + name;
+		dividend = Math.floor((dividend - modulo) / 26);
+	}
+
+	return name;
+}
+
 export function transformRange(string) {
 	if (!string || typeof string !== "string") return;
 
