@@ -15,7 +15,7 @@
 			<tr v-for="(row, rowIndex) in data" :key="rowIndex">
 				<template v-for="(cell, cellIndex) in row" :key="cellIndex">
 					<td
-						v-if="cellVisible({ r: rowIndex, c: cellIndex })"
+						v-if="cellShow({ r: rowIndex, c: cellIndex })"
 						:colspan="
 							colspan(merges, { r: rowIndex, c: cellIndex })
 						"
@@ -35,19 +35,9 @@
 import XlsxPopulate from "xlsx-populate";
 import { saveAs } from "file-saver";
 import { reactive } from "@vue/reactivity";
-import { colspan, rowspan } from "@/utils";
+import { colspan, rowspan, transformRange, cellVisible } from "@/utils";
 
 import "./style.less";
-import { columnNumberToName } from "../utils";
-
-console.log(columnNumberToName(100));
-
-const mereges = [
-	{ s: { c: 1, r: 1 }, e: { c: 3, r: 1 } },
-	{ s: { c: 3, r: 2 }, e: { c: 3, r: 4 } },
-];
-
-console.log(mereges);
 
 export default {
 	name: "Home",
@@ -98,19 +88,28 @@ export default {
 						.style("border", true)
 						.style("fontSize", 18); // 设置样式
 
-					sheet.cell("A1").style("fill", {
-						type: "pattern",
-						pattern: "darkDown",
-						foreground: "ff0000",
-						background: {
-							theme: 3,
-							tint: 0.4,
-						},
-					}); // 设置样式
+					sheet
+						.cell("A1")
+						.style("fill", {
+							type: "pattern",
+							pattern: "darkDown",
+							foreground: "ff0000",
+							background: {
+								theme: 3,
+								tint: 0.4,
+							},
+						})
+						.style("horizontalAlignment", "center")
+						.style("verticalAlignment", "center");
+					// 设置样式
 
 					const range = sheet.range("A1:C1"); //获取区间
 
 					// range.merged(true); // 合并单元格
+
+					transformRange(merges).forEach((val) => {
+						sheet.range(val).merged(true);
+					});
 
 					// 获取区间的单元格
 					range.cells().map((cell) => {
@@ -145,25 +144,8 @@ export default {
 				});
 		};
 
-		const cellVisible = (current) => {
-			const c = current.c + 1;
-			const r = current.r + 1;
-
-			let visible = true;
-
-			for (let i = 0; i < merges.length; i++) {
-				let { s, e } = merges[i];
-
-				if (s.c === c && e.c === c && s.r < r && r <= e.r) {
-					visible = false;
-					break;
-				} else if (s.r === r && e.r === r && s.c < c && c <= e.c) {
-					visible = false;
-					break;
-				}
-			}
-
-			return visible;
+		const cellShow = (current) => {
+			return cellVisible(current, merges);
 		};
 
 		return {
@@ -173,7 +155,7 @@ export default {
 			merges,
 			colspan,
 			rowspan,
-			cellVisible,
+			cellShow,
 		};
 	},
 };

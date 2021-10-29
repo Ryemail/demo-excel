@@ -25,19 +25,15 @@ export function columnNumberToName(number) {
 	return name;
 }
 
-export function transformRange(string) {
-	if (!string || typeof string !== "string") return;
-
-	const column = string.replace(/[0-9]/g, "").split(":"),
-		row = string.replace(/[A-Z]/g, "").split(":");
-
-	return {
-		s: { r: +row[0], c: columnNameToNumber(column[0]) },
-		e: { r: +row[1], c: columnNameToNumber(column[1]) },
-	};
+export function transformRange(merges) {
+	return merges.map(({ s, e }) => {
+		return (
+			columnNumberToName(s.c) + s.r + ":" + columnNumberToName(e.c) + e.r
+		);
+	});
 }
 
-export function merge(merges, current, type) {
+export function viewMerge(merges, current, type) {
 	for (let i = 0; i < merges.length; i++) {
 		const val = merges[i];
 
@@ -55,9 +51,30 @@ export function merge(merges, current, type) {
 }
 
 export function rowspan(merges, current) {
-	return merge(merges, current, "row");
+	return viewMerge(merges, current, "row");
 }
 
 export function colspan(merges, current) {
-	return merge(merges, current, "col");
+	return viewMerge(merges, current, "col");
+}
+
+export function cellVisible(current, merges) {
+	const c = current.c + 1;
+	const r = current.r + 1;
+
+	let visible = true;
+
+	for (let i = 0; i < merges.length; i++) {
+		let { s, e } = merges[i];
+
+		if (s.c === c && e.c === c && s.r < r && r <= e.r) {
+			visible = false;
+			break;
+		} else if (s.r === r && e.r === r && s.c < c && c <= e.c) {
+			visible = false;
+			break;
+		}
+	}
+
+	return visible;
 }
