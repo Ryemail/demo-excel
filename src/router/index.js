@@ -12,6 +12,11 @@ const routes = [
 		name: "echart",
 		component: () => import("../views/echarts.vue"),
 	},
+	{
+		path: "/exceljs",
+		name: "exceljs",
+		component: () => import("../views/exceljs.vue"),
+	},
 ];
 
 const router = createRouter({

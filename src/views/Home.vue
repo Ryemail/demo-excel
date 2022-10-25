@@ -106,7 +106,6 @@ export default {
 					const range = sheet.range("A1:C1"); //获取区间
 
 					// range.merged(true); // 合并单元格
-
 					transformRange(merges).forEach((val) => {
 						sheet.range(val).merged(true);
 					});

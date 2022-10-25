@@ -1,3 +1,28 @@
+// buffer 转 16进制
+export function buffer2hex(buffer) {
+	const hexArr = Array.prototype.map.call(
+		new Uint8Array(buffer),
+		function (bit) {
+			return ("00" + bit.toString(16)).slice(-2);
+		}
+	);
+	return hexArr;
+}
+
+// buffer 转 字符串
+// buffer: ArrayBuffer,
+// callback: Function,
+// encoding: string = "UTF-8"
+export function buffer2String(buffer, callback, encoding = "UTF-8") {
+	const blob = new Blob([buffer], { type: "text/plain" });
+	const reader = new FileReader();
+
+	reader.onload = function (evt) {
+		if (evt.target) callback(evt.target.result);
+	};
+	reader.readAsText(blob, encoding);
+}
+
 export function columnNameToNumber(name) {
 	if (!name || typeof name !== "string") return;
 
